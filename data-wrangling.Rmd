@@ -1,0 +1,247 @@
+---
+title: "General Graphs"
+output: html_document
+---
+```{r}
+#Package Libraries
+#install.packages("knitr")
+library(knitr)
+#install.packages("xaringan")
+library(xaringan)
+#install.packages("servr")
+library(servr)
+library(rio)
+library(tidyverse)
+library(ggplot2)
+library(ggridges)
+library(ggsci)
+library(ggthemes)
+library(car)
+library(gridExtra) 
+#install.packages("ggpubr")
+library(ggpubr)
+#install.packages("showtext")
+library(showtext)
+#install.packages("prediction")
+library(prediction)
+font_add_google("Merriweather", "M", regular.wt = 400)
+font_add_google("Josefin Sans", "JS", regular.wt = 400)
+font_add_google("Work Sans", "WS", regular.wt = 400)
+font_add_google("EB Garamond", "G", regular.wt = 400)
+font_add_google("Raleway", "Rw", regular.wt = 400)
+font_add_google("Averia Sans Libre", "Ave", regular.wt = 400)
+font_add_google("Nova Round", "Nova", regular.wt = 400)
+font_add_google("Carrois Gothic", "CG", regular.wt=400)
+font_add_google("Jost", "Jost", regular.wt=400)
+font_add_google("Oswald", "O", regular.wt=400)
+font_add_google("Alfa Slab One", "ASO", regular.wt=400)
+font_add_google("Passion One", "PO", regular.wt=400)
+font_add_google("Roboto Condensed", "RC", regular.wt=400)
+font_add_google("Yanone Kaffeesatz", "YF", regular.wt=600)
+showtext_opts(dpi = 300)
+showtext_auto(enable = TRUE)
+#install.packages("devtools")
+library(devtools)
+#install_github("ryanburge/socsci")
+library(socsci)
+#install.packages("paletteer")
+library(paletteer)
+#install.packages("jtools")
+library(jtools)
+#install.packages("interactions")
+library(interactions)
+#install.packages("patchwork")
+library(patchwork)
+#install.packages("psych")
+library(psych)
+#install.packages("MASS")
+library(MASS)
+#install.packages("ragg")
+library(ragg)
+#install.packages("systemfonts")
+library(systemfonts)
+#install.packages("gtools")
+library(gtools)
+library(margins)
+library(interactions)
+#install.packages("huxtable")
+library(huxtable)
+#install.packages("officer")
+library(officer)
+#install.packages("flextable")
+library(flextable)
+
+```
+
+```{r}
+library(readr)
+O20_with_weights <- read_csv("~/Downloads/O20_with_weights.csv")
+
+O20 <- O20_with_weights
+
+O20 <- O20 %>% filter(gc==1)
+
+rm(O20_with_weights)
+
+```
+
+```{r}
+#Making tropes variable
+O20 <- O20 %>%mutate(q107_1r=car::Recode(q107_1, "1=1; 2=0"))
+O20 <- O20 %>%mutate(q107_2r=car::Recode(q107_2, "1=1; 2=0"))
+O20 <- O20 %>%mutate(q107_3r=car::Recode(q107_3, "1=1; 2=0"))
+O20 <- O20 %>%mutate(q107_4r=car::Recode(q107_4, "1=1; 2=0"))
+O20 <- O20 %>%mutate(q107_5r=car::Recode(q107_5, "1=1; 2=0"))
+O20 <- O20 %>%mutate(q107_6r=car::Recode(q107_6, "1=1; 2=0"))
+O20 <- O20 %>%mutate(q107_7r=car::Recode(q107_7, "1=1; 2=0"))
+O20 <- O20 %>%mutate(q107_8r=car::Recode(q107_8, "1=1; 2=0"))
+
+O20 <- O20 %>% rowwise() %>% mutate(tropes=sum(q107_1r, 
+                                               q107_2r, 
+                                               q107_3r,
+                                               q107_4r, 
+                                               q107_5r, 
+                                               q107_6r, 
+                                               q107_7r, 
+                                               q107_8r, na.rm=TRUE)) %>% ungroup()
+O20 <- O20 %>% mutate(tropes_factor=as.factor(tropes))
+
+```
+
+```{r}
+#Demos and stuff
+O20 <- O20 %>% mutate(age=2020-q3_1,
+                      birthyr=q3_1,
+                      employment=q139,
+                      ed=q143,
+                      sexualo=q144,
+                      marstat=q145,
+                      faminc=q146,
+                      masculine=q138_1,
+                      feminine=q138_2,
+                      polint=6-q33,
+                      pid7=q55)
+
+```
+
+```{r}
+
+#Attendance
+O20 <- O20 %>% mutate(attend5=car::recode(q6, "1:2=5; 3=4; 4=3; 5=2; 6=1"))
+O20 <- O20 %>% mutate(hiatt=car::recode(attend5, "4:5=1; else=0"))
+
+#Religious activity
+O20 <- O20 %>% mutate(involve=q62_4)
+```
+
+```{r}
+#Christian Nationalism
+#Changing meaning of high and low numbers
+O20cn <- O20 %>% mutate(q64_1r=6-q64_1,
+                      q64_2r=6-q64_2,
+                      q64_3r=6-q64_3,
+                      q64_4r=6-q64_4,
+                      q64_5r=6-q64_5,
+                      q69_1r=6-q69_1,
+                      q69_2r=6-q69_2,
+                      q69_3r=6-q69_3,
+                      q69_4r=6-q69_4,
+                      q69_5r=6-q69_5,
+                      q73_1r=6-q73_1,
+                      q73_2r=6-q73_2,
+                      q73_3r=6-q73_3,
+                      q73_4r=6-q73_4,
+                      q73_5r=6-q73_5)
+#Gathering
+O20cn <- O20cn %>% gather(key="t_cn", value="cn1", q64_1r, q69_1r, q73_1r, na.rm=TRUE)
+O20cn <- O20cn %>% gather(key="t_cn", value="cn2", q64_2r, q69_2r, q73_2r, na.rm=TRUE)
+O20cn <- O20cn %>% gather(key="t_cn", value="cn3", q64_3r, q69_3r, q73_3r, na.rm=TRUE)
+O20cn <- O20cn %>% gather(key="t_cn", value="cn4", q64_4r, q69_4r, q73_4r, na.rm=TRUE)
+O20cn <- O20cn %>% gather(key="t_cn", value="cn5", q64_5r, q69_5r, q73_5r, na.rm=TRUE)
+
+#Christian Nationalism average score
+O20 <- O20 %>% mutate(cn=(((cn1+cn2+(6-cn3)+cn4+cn5)-5)/20))
+
+
+O20 <- O20 %>% mutate(t_cn=frcode(t_cn=="q64_5r" ~ "Control",
+                                  t_cn=="q69_5r" ~ "Minority",
+                                  t_cn=="q73_5r" ~ "Majority"))
+
+#Total CN score
+O20 <- O20 %>% mutate(cntot=(((cn1+cn2+(6-cn3)+cn4+cn5)-5)))
+
+#Total CN score divided into four equalish groups
+O20 <- O20 %>% mutate(cntot4f=
+                        frcode(cntot==0|cntot==1|cntot==2|cntot==3|cntot==4|cntot==5|cntot==6|cntot==7 ~ "Lowest",
+                               cntot==8|cntot==9|cntot==10|cntot==11 ~ "Second\nLowest",
+                               cntot==12|cntot==13|cntot==14 ~ "Second\nHighest", 
+                               cntot==15|cntot==16|cntot==17|cntot==18|cntot==19|cntot==20 ~ "Highest"))
+```
+
+
+
+```{r}
+
+#Experiments
+
+#Antizionism####
+O20_az <- O20 %>% gather(key="t_az_o20", value="p_az_o20", q102, q103, q104, na.rm=TRUE) %>% 
+  mutate(t_az_o20=frcode(t_az_o20=="q102" ~ "All People",
+                         t_az_o20=="q103" ~ "Jews",
+                         t_az_o20=="q104" ~ "Jews + Israel"),
+           p_az_o20=car::recode(p_az_o20, "1:2=1; 3:5=0"))
+#Jews vs All People
+O20_azj <- O20 %>% gather(key="t_az_o20", value="p_az_o20", q102, q103, na.rm=TRUE) %>% 
+  mutate(t_az_o20=frcode(t_az_o20=="q102" ~ "All People",
+                         t_az_o20=="q103" ~ "Jews"),
+           p_az_o20=car::recode(p_az_o20, "1:2=1; 3:5=0"))
+
+#Jews + Israel vs All people
+O20_azi <- O20 %>% gather(key="t_az_o20", value="p_az_o20", q102, q104, na.rm=TRUE) %>% 
+  mutate(t_az_o20=frcode(t_az_o20=="q102" ~ "All People",
+                         t_az_o20=="q104" ~ "Jews + Israel"),
+           p_az_o20=car::recode(p_az_o20, "1:2=1; 3:5=0"))
+
+#Jews vs Jews + Israel
+O20_azji <- O20 %>% gather(key="t_az_o20", value="p_az_o20", q103, q104, na.rm=TRUE) %>% 
+  mutate(t_az_o20=frcode(t_az_o20=="q103" ~ "Jews",
+                         t_az_o20=="q104" ~ "Jews + Israel"),
+           p_az_o20=car::recode(p_az_o20, "1:2=1; 3:5=0"))
+
+
+#Fighting Discrimination####
+O20_fd <- O20 %>% gather(key="t_fd_o20", value="p_fd_o20", q100, q101, na.rm=TRUE) %>% 
+  mutate(t_fd_o20=frcode(t_fd_o20=="q100" ~ "Control",
+                         t_fd_o20=="q101" ~ "Antisemitism"),
+           p_fd_o20=car::recode(p_fd_o20, "1=1; 2:3=0"))
+
+O20_fdf <- O20 %>% gather(key="t_fd_o20", value="p_fd_o20", q100, q101, na.rm=TRUE) %>% 
+  mutate(t_fd_o20=frcode(t_fd_o20=="q100" ~ "Control",
+                         t_fd_o20=="q101" ~ "Antisemitism"),
+         p_fd_o20=frcode(p_fd_o20== 1 ~ "Yes",
+                         p_fd_o20== 2|3 ~ "No"))
+
+#Tropes####
+O20_tropes <- O20 %>% gather(key = "t_tropes", value = "p_tropes", 
+                                 q107_1r, q107_2r, q107_3r, q107_4r,
+                                 q107_5r, q107_6r, q107_7r, q107_8r) %>% 
+      mutate(t_tropes=frcode(t_tropes=="q107_1r" ~ "Jews are more\nloyal to Israel",
+                             t_tropes=="q107_2r" ~ "Jews have too much power\nin the business world",
+                             t_tropes=="q107_3r" ~ "Jews don't care\nabout anyone else",
+                             t_tropes=="q107_4r" ~ "Jews have too much\ncontrol over global affairs",
+                             t_tropes=="q107_5r" ~ "Jews have too much control\nover the US government",
+                             t_tropes=="q107_6r" ~ "Jews think they are\nbetter than others",
+                             t_tropes=="q107_7r" ~ "Jews have too much\ncontrol over the media",
+                             t_tropes=="q107_8r" ~ "Jews killed Jesus"))
+
+
+```
+
+
+
+
+
+
+
+
+
