@@ -1,0 +1,111 @@
+---
+title: "general-graphs"
+output: html_document
+---
+
+```{r}
+O20 %>% 
+  group_by(cntot4f) %>% filter(cntot4f!="NA") %>% 
+  mean_ci(tropes, wt=wgt, ci=.84) %>% 
+  ggplot(., aes(x=cntot4f, y=mean, fill= cntot4f)) + 
+  geom_col(alpha=.8, color="black", width = .75) + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.1) +
+  theme_hc() +
+  theme(text=element_text(family="G", size=12),
+        legend.position = "blank",
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(size=.5, color="gray80"),
+        axis.text.x = element_text(size=9),
+        plot.title = element_text(hjust = .5)) +
+  geom_text(aes(label = round(mean, digits=2)), family="G", nudge_y = -.6) +
+  scale_y_continuous() +
+  labs(x="Level of Christian Nationalism", y="Number of Tropes People Agree With", 
+       title=NULL,
+       caption="Source: October 2020 Survey\nNote: Confidence intervals are equal to a 95% test of statistical significance") +
+  scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041"))
+
+```
+
+
+```{r}
+O20_tropes %>% 
+  group_by(t_tropes, cntot4f) %>% 
+  ct(p_tropes, wt=wgt) %>% 
+  filter(p_tropes==1) %>% 
+  ggplot(., aes(x=cntot4f, y=pct, fill= cntot4f)) + 
+  geom_col(alpha=.8, color="black", width = .75) + 
+  theme_hc() +
+  theme(text=element_text(family="G", size=12),
+        legend.position = "blank",
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(size=.5, color="gray80"),
+        axis.text.x = element_text(size=9),
+        plot.title = element_text(hjust = .5)) +
+  geom_text(aes(label = round(pct * 100, digits = 2)), family="G", nudge_y = -.07, size=3.5, color="white") +
+  scale_y_continuous(labels=percent_format(accuracy=1)) +
+  labs(x="Level of Christian Nationalism", y="Percentage of Respondents Who\nAgree with Each Statement", 
+       title=NULL,
+       caption="Source: October 2020 Survey") +
+  scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041"))+
+  facet_wrap(~t_tropes)
+
+```
+
+
+
+```{r}
+O20_tropes %>% group_by(t_tropes, q38_10lab, cntot4f) %>% 
+  ct(p_tropes, wt=wgt) %>% filter(p_tropes==1) %>% 
+  ggplot(., aes(x=cntot4f, y=pct, color=q38_10lab, group=q38_10lab)) +
+  geom_line(size=1.25) +
+  geom_point(size=4, color="white", shape=19) +
+  geom_point(size=4, shape=1) +
+  theme_hc() +
+  facet_wrap(~t_tropes, ncol=4, nrow=2) +
+  theme(legend.position="bottom",
+        text=element_text(family="G", size=12),        
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  scale_x_discrete(labels=c("Lowest", "", "", "Highest")) +
+  scale_y_continuous(labels=percent_format(accuracy=1)) +
+  labs(x="Level of Christian Nationalism", 
+       y="Percentage of Respondents Who\nAgree with Each Statement",
+       caption="Source: October 2020 Survey.",
+       title=NULL) +
+  scale_color_manual(values = c("#84D7E1FF", "#8A4198FF"), name="QAnon Belief")
+
+```
+
+
+
+
+
+
+```{r}
+lm_cn_q <- glm(tropes ~ q38_10lab*cn*+age+female+ed+reltrad+white, 
+                   data = O20)
+
+interact_plot(lm_cn_q, pred = cn, modx = q38_10lab, 
+              int.width=.76, interval = TRUE,
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "QAnon Support") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Christian Nationalism Level", 
+       y="Number of Antisemitic Tropes Agreed With",
+       title=NULL)+
+  scale_y_continuous()
+
+```
+
+
+
+
+
+
+

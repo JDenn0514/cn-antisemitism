@@ -75,13 +75,21 @@ library(flextable)
 
 ```{r}
 library(readr)
-O20_with_weights <- read_csv("~/Downloads/O20_with_weights.csv")
 
-O20 <- O20_with_weights
+October_2020_US_2528 <- read_csv("data/October_2020_US_2528.csv")
 
-O20 <- O20 %>% filter(gc==1)
+O20_with_weights <- read_csv("data/O20_with_weights(1).csv")
 
-rm(O20_with_weights)
+October_2020_US_2528 <- October_2020_US_2528 %>% rename_all(tolower) 
+October_2020_US_2528 <- October_2020_US_2528 %>% filter(gc==1)
+
+O20_with_weights <- O20_with_weights %>% rename_all(tolower) 
+
+O20 <- left_join(October_2020_US_2528, O20_with_weights, by="responseid")
+
+rm(October_2020_US_2528, O20_with_weights)
+
+
 
 ```
 
@@ -137,7 +145,7 @@ O20 <- O20 %>% mutate(involve=q62_4)
 ```{r}
 #Christian Nationalism
 #Changing meaning of high and low numbers
-O20cn <- O20 %>% mutate(q64_1r=6-q64_1,
+O20 <- O20 %>% mutate(q64_1r=6-q64_1,
                       q64_2r=6-q64_2,
                       q64_3r=6-q64_3,
                       q64_4r=6-q64_4,
@@ -153,11 +161,11 @@ O20cn <- O20 %>% mutate(q64_1r=6-q64_1,
                       q73_4r=6-q73_4,
                       q73_5r=6-q73_5)
 #Gathering
-O20cn <- O20cn %>% gather(key="t_cn", value="cn1", q64_1r, q69_1r, q73_1r, na.rm=TRUE)
-O20cn <- O20cn %>% gather(key="t_cn", value="cn2", q64_2r, q69_2r, q73_2r, na.rm=TRUE)
-O20cn <- O20cn %>% gather(key="t_cn", value="cn3", q64_3r, q69_3r, q73_3r, na.rm=TRUE)
-O20cn <- O20cn %>% gather(key="t_cn", value="cn4", q64_4r, q69_4r, q73_4r, na.rm=TRUE)
-O20cn <- O20cn %>% gather(key="t_cn", value="cn5", q64_5r, q69_5r, q73_5r, na.rm=TRUE)
+O20 <- O20 %>% gather(key="t_cn", value="cn1", q64_1r, q69_1r, q73_1r, na.rm=TRUE)
+O20 <- O20 %>% gather(key="t_cn", value="cn2", q64_2r, q69_2r, q73_2r, na.rm=TRUE)
+O20 <- O20 %>% gather(key="t_cn", value="cn3", q64_3r, q69_3r, q73_3r, na.rm=TRUE)
+O20 <- O20 %>% gather(key="t_cn", value="cn4", q64_4r, q69_4r, q73_4r, na.rm=TRUE)
+O20 <- O20 %>% gather(key="t_cn", value="cn5", q64_5r, q69_5r, q73_5r, na.rm=TRUE)
 
 #Christian Nationalism average score
 O20 <- O20 %>% mutate(cn=(((cn1+cn2+(6-cn3)+cn4+cn5)-5)/20))
@@ -170,12 +178,30 @@ O20 <- O20 %>% mutate(t_cn=frcode(t_cn=="q64_5r" ~ "Control",
 #Total CN score
 O20 <- O20 %>% mutate(cntot=(((cn1+cn2+(6-cn3)+cn4+cn5)-5)))
 
+O20 <- O20 %>% mutate(cntot2=quantcut(cntot, 2))
+O20 <- O20 %>% mutate(cntot2f=
+                        frcode(cntot2=="[0,11]"~"Low",
+                               cntot2=="(11,20]"~"High"))
+
+
 #Total CN score divided into four equalish groups
 O20 <- O20 %>% mutate(cntot4f=
                         frcode(cntot==0|cntot==1|cntot==2|cntot==3|cntot==4|cntot==5|cntot==6|cntot==7 ~ "Lowest",
                                cntot==8|cntot==9|cntot==10|cntot==11 ~ "Second\nLowest",
                                cntot==12|cntot==13|cntot==14 ~ "Second\nHighest", 
                                cntot==15|cntot==16|cntot==17|cntot==18|cntot==19|cntot==20 ~ "Highest"))
+
+
+```
+
+```{r}
+
+#Making QAnon variable
+O20 <- O20 %>% mutate(q38_10r=6-q38_10)
+O20 <- O20 %>% mutate(q38_10rc=car::recode(q38_10r, "1:3=0; 4:5=1")) 
+O20 <- O20 %>% mutate(q38_10lab=frcode(q38_10rc==0 ~ "Disagree",
+                                       q38_10rc==1 ~ "Agree"))
+
 ```
 
 
