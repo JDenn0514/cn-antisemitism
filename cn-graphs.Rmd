@@ -1,9 +1,10 @@
 ---
-title: "general-graphs"
+title: "cn-graphs"
 output: html_document
 ---
 
 ```{r}
+#Figure 1
 O20 %>% 
   group_by(cntot4f) %>% filter(cntot4f!="NA") %>% 
   mean_ci(tropes, wt=wgt, ci=.84) %>% 
@@ -19,15 +20,17 @@ O20 %>%
         plot.title = element_text(hjust = .5)) +
   geom_text(aes(label = round(mean, digits=2)), family="G", nudge_y = -.6) +
   scale_y_continuous() +
-  labs(x="Level of Christian Nationalism", y="Number of Tropes People Agree With", 
+  labs(x="Level of Christian Nationalism", y="Average Number of\nTropes People Agree With", 
        title=NULL,
-       caption="Source: October 2020 Survey\nNote: Confidence intervals are equal to a 95% test of statistical significance") +
+       caption="Source: October 2020 Survey") +
   scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041"))
 
 ```
 
 
 ```{r}
+#Figure 2
+
 O20_tropes %>% 
   group_by(t_tropes, cntot4f) %>% 
   ct(p_tropes, wt=wgt) %>% 
@@ -43,7 +46,8 @@ O20_tropes %>%
         plot.title = element_text(hjust = .5)) +
   geom_text(aes(label = round(pct * 100, digits = 2)), family="G", nudge_y = -.07, size=3.5, color="white") +
   scale_y_continuous(labels=percent_format(accuracy=1)) +
-  labs(x="Level of Christian Nationalism", y="Percentage of Respondents Who\nAgree with Each Statement", 
+  labs(x="Level of Christian Nationalism", 
+       y="Percentage of Respondents Who\nAgree with Each Statement", 
        title=NULL,
        caption="Source: October 2020 Survey") +
   scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041"))+
@@ -54,6 +58,8 @@ O20_tropes %>%
 
 
 ```{r}
+#Figure 3
+
 O20_tropes %>% group_by(t_tropes, q38_10lab, cntot4f) %>% 
   ct(p_tropes, wt=wgt) %>% filter(p_tropes==1) %>% 
   ggplot(., aes(x=cntot4f, y=pct, color=q38_10lab, group=q38_10lab)) +
@@ -76,19 +82,40 @@ O20_tropes %>% group_by(t_tropes, q38_10lab, cntot4f) %>%
 
 ```
 
+```{r}
+O20 %>% 
+  group_by(hiattf, reltrad) %>% filter(hiattf!="NA") %>% 
+  filter(reltrad!="Jewish") %>% 
+  mean_ci(tropes, wt=wgt, ci=.84) %>% 
+  ggplot(., aes(x=hiattf, y=mean, fill= hiattf)) + 
+  geom_col(alpha=.8, color="black", width = .75) + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.1) +
+  theme_hc() +
+  theme(text=element_text(family="G", size=12),
+        legend.position = "blank",
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(size=.5, color="gray80"),
+        axis.text.x = element_text(size=9),
+        plot.title = element_text(hjust = .5)) +
+  geom_text(aes(label = round(mean, digits=2)), family="G", nudge_y = 1) +
+  scale_y_continuous() +
+  labs(x="Church Attendance", y="Average Number of\nTropes People Agree With", 
+       title=NULL,
+       caption="Source: October 2020 Survey") +
+  scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041","#3F4041","#3F4041")) +
+  facet_wrap(~reltrad, nrow=2)
 
-
-
-
+```
 
 ```{r}
-lm_cn_q <- glm(tropes ~ q38_10lab*cn*+age+female+ed+reltrad+white, 
+cn_as_att <- glm.nb(tropes ~ cn*hiattf*white+age+female+ed+reltrad, 
                    data = O20)
 
-interact_plot(lm_cn_q, pred = cn, modx = q38_10lab, 
+interact_plot(cn_as_att, pred = cn, modx = hiattf, mod2=white,
               int.width=.76, interval = TRUE,
+              mod2.labels = c("Non-White", "White"),
               colors = c("#84D7E1FF", "#8A4198FF"),
-              legend.main = "QAnon Support") +
+              legend.main = "Church Attendance") +
   theme_minimal() +
   theme(text=element_text(family="G", size=12),
         panel.grid.minor.y = element_blank(),
@@ -96,10 +123,51 @@ interact_plot(lm_cn_q, pred = cn, modx = q38_10lab,
         legend.position = "right",
         plot.title = element_text(hjust = .5),
         legend.title = element_text(hjust = .5)) +
-  labs(x="Christian Nationalism Level", 
-       y="Number of Antisemitic Tropes Agreed With",
-       title=NULL)+
+  labs(x="Level of Christian Nationalism", 
+       y="Percentage of Respondents Who\nAgree with Each Statement", 
+       title=NULL,
+       caption="Source: October 2020 Survey") +
   scale_y_continuous()
+
+
+
+```
+
+
+
+
+
+
+
+```{r}
+
+cn_as_cp <- glm.nb(tropes ~ cn*cpavg2*white+age+female+ed+reltrad+hiattf, 
+                   data = O20)
+
+interact_plot(cn_as_cp, pred = cn, modx = cpavg2, mod2=white,
+              int.width=.76, interval = TRUE,
+              mod2.labels = c("Non-White", "White"),
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "Level of Perceived\nChristian Persecution") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Level of Christian Nationalism", 
+       y="Percentage of Respondents Who\nAgree with Each Statement", 
+       title=NULL,
+       caption="Source: October 2020 Survey") +
+  scale_y_continuous()
+
+```
+
+
+```{r}
+
+
 
 ```
 

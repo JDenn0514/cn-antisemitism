@@ -139,6 +139,14 @@ O20 <- O20 %>% mutate(rep=car::recode(pid7, "1:4=0; 5:7=1"),
                                  rep==1 ~ "Republicans"))
 
 #Attendance
+O20 <- O20 %>% mutate(q6r=as.factor(q6))
+O20 <- O20 %>% mutate(attend=frcode(q6==1 ~ "More than\nonce a week",
+                                    q6==2 ~ "Once a week",
+                                    q6==3 ~ "A few times\na month",
+                                    q6==4 ~ "A few times\nayear",
+                                    q6==5 ~ "Seldom",
+                                    q6==6 ~ "Never"))
+                                   
 O20 <- O20 %>% mutate(attend5=car::recode(q6, "1:2=5; 3=4; 4=3; 5=2; 6=1"))
 O20 <- O20 %>% mutate(hiatt=car::recode(attend5, "4:5=1; else=0"))
 O20 <- O20 %>% mutate(hiattf=frcode(hiatt==0 ~ "Low Attender",
@@ -751,7 +759,7 @@ O20 <- O20 %>% mutate(christian=case_when(reltrad=="Evangelical" |
 
 #library(stringr)
 #O20 <- O20 %>% mutate(q7_14_text=str_replace(q7_14_text, "'", ""))
-#O20 <- O20 %>% mutate(q7_14_text=str_replace(q7_14_text, "â???T", ""))
+#O20 <- O20 %>% mutate(q7_14_text=str_replace(q7_14_text, "????T", ""))
 #O20 <- O20 %>% mutate(q8_16_text=str_replace(q7_14_text, "'", ""))
 
 
@@ -854,6 +862,7 @@ O20 <- O20 %>% mutate(q107_1r=car::recode(q107_1, "2=0"),
                       q107_7r=car::recode(q107_7, "2=0"),
                       q107_8r=car::recode(q107_8, "2=0"))
 O20 <- O20 %>% mutate(tropes=q107_1r+q107_2r+q107_3r+q107_4r+q107_5r+q107_6r+q107_7r+q107_8r)
+O20 <- O20 %>% mutate(tropes_factor=as.factor(tropes))
 
 
 #Difference with Church over Trump
