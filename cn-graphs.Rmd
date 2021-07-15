@@ -108,11 +108,13 @@ O20 %>%
 ```
 
 ```{r}
-cn_as_att <- glm.nb(tropes ~ cn*hiattf*white+age+female+ed+reltrad, 
-                   data = O20)
+cn_hiattf <- glm.nb(tropes ~ cn*attend5*white+q38_10rc+sdo+cphavg+evil+pid7f+age+female+ed+reltrad, 
+                   data = O20, weight=wgt)
 
-interact_plot(cn_as_att, pred = cn, modx = hiattf, mod2=white,
-              int.width=.76, interval = TRUE,
+interact_plot(cn_hiattf, pred = cn, modx = attend5, mod2=white,
+              int.width=.76, interval = TRUE,               
+              modx.values = "plus-minus",
+              modx.labels = c("Low","High"),
               mod2.labels = c("Non-White", "White"),
               colors = c("#84D7E1FF", "#8A4198FF"),
               legend.main = "Church Attendance") +
@@ -135,17 +137,14 @@ interact_plot(cn_as_att, pred = cn, modx = hiattf, mod2=white,
 
 
 
-
-
-
-
 ```{r}
 
-cn_as_cp <- glm.nb(tropes ~ cn*cpavg2*white+age+female+ed+reltrad+hiattf, 
-                   data = O20)
-
-interact_plot(cn_as_cp, pred = cn, modx = cpavg2, mod2=white,
+cn_cphavg <- glm.nb(tropes ~ cn*cphavg*white+q38_10rc+sdo+attend5+evil+pid7f+age+female+ed+reltrad, 
+                   data = O20, weight=wgt)
+interact_plot(cn_cphavg, pred = cn, modx = cphavg, mod2=white,
               int.width=.76, interval = TRUE,
+              modx.values = "plus-minus",
+              modx.labels = c("Low","High"),
               mod2.labels = c("Non-White", "White"),
               colors = c("#84D7E1FF", "#8A4198FF"),
               legend.main = "Level of Perceived\nChristian Persecution") +
@@ -166,10 +165,127 @@ interact_plot(cn_as_cp, pred = cn, modx = cpavg2, mod2=white,
 
 
 ```{r}
+cn_qanon <- glm.nb(tropes ~ cn*q38_10rc*white+attend5+sdo+cphavg+evil+pid7f+age+female+ed+reltrad, 
+                   data = O20, weight=wgt)
+
+interact_plot(cn_qanon, pred = cn, modx = q38_10rc, mod2=white,
+              int.width=.76, interval = TRUE,
+              modx.values=c(0,1),
+              modx.labels = c("Disagree","Agree"),
+              mod2.labels = c("Non-White", "White"),
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "QAnon") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Level of Christian Nationalism", 
+       y="Percentage of Respondents Who\nAgree with Each Statement", 
+       title=NULL,
+       caption="Source: October 2020 Survey") +
+  scale_y_continuous()
+
 
 
 
 ```
+
+```{r}
+cn_sdo <- glm.nb(tropes ~ cn*sdo*white+q38_10rc+cphavg+attend5+evil+pid7f+age+female+ed+reltrad, 
+                   data = O20, weight=wgt)
+interact_plot(cn_sdo, pred = cn, modx = sdo, mod2=white,
+              int.width=.76, interval = TRUE,
+              modx.values = "plus-minus",
+              modx.labels = c("Low", "High"),
+              mod2.labels = c("Non-White", "White"),
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "Level of Social\nDominance\nOrientation") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Level of Christian Nationalism", 
+       y="Percentage of Respondents Who\nAgree with Each Statement", 
+       title=NULL,
+       caption="Source: October 2020 Survey") +
+  scale_y_continuous()
+
+```
+
+
+
+```{r}
+#make a plot summs graph for the model
+
+cn_model <- glm.nb(tropes ~ cn+sdo+q38_10rc+cphavg+attend5+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20, weight=wgt)
+
+plot_summs(cn_model,
+           coefs = c("Christian Nationalism"="cn",
+                     "Social Dominance Orientation"="sdo",
+                     "QAnon"="q38_10rc",
+                     "Christian Persecution"="cphavg",
+                     "Church Attendance"="attend5",
+                     "Belief in Evil"="evil",
+                     "White"="white",
+                     "Democrat"="pid7fDemocrat",
+                     "Lean Democrat"="pid7fLean\nDemocrat",
+                     "Independent"="pid7fIndependent",
+                     "Lean Republican"="pid7fLean\nRepublican",
+                     "Republican"="pid7fRepublican",
+                     "Strong Republican"="pid7fStrong\nRepublican",
+                     "Age"="age",
+                     "Female"="female",
+                     "Education Level"="ed",
+                     "Mainline"="reltradMainline",
+                     "Black Protestant"="reltradBlack Prot.",
+                     "Catholic"="reltradCatholic",
+                     "Jewish"="reltradJewish",
+                     "Other Faith"="reltradOther Faith",
+                     "Non-Denominational"="reltradNon-Denominational",
+                     "Unclassified"="reltradUnclassified"),
+           ci_level = 0.84) +
+  theme_minimal()+
+  theme(text=element_text(family="G", size=12),
+          panel.grid.major.y = element_blank())+
+  labs(x="Estimate",
+       y=NULL,
+       title = NULL)
+
+
+
+```
+
+```{r}
+cn_fd <- glm.nb(p_fd_o20 ~ cn*t_fd_o20+attend5+sdo+q38_10rc+cphavg+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_fd, weight=wgt)
+
+interact_plot(cn_fd, pred = cn, modx = t_fd_o20, 
+              int.width=.76, interval = TRUE,
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Level of Christian Nationalism", 
+       y="Percent That Agree With Experiment Statement",
+       title=NULL)+
+  scale_y_continuous()
+
+```
+
+
+
 
 
 
