@@ -263,8 +263,9 @@ plot_summs(cn_model,
 ```
 
 ```{r}
-cn_fd <- glm.nb(p_fd_o20 ~ cn*t_fd_o20+attend5+sdo+q38_10rc+cphavg+evil+white+pid7f+age+female+ed+reltrad, 
+cn_fd <- glm.nb(p_fd_o20 ~ cn+t_fd_o20+attend5+sdo+q38_10rc+cphavg+evil+white+pid7f+age+female+ed+reltrad, 
                    data = O20_fd, weight=wgt)
+summary(cn_fd)
 
 interact_plot(cn_fd, pred = cn, modx = t_fd_o20, 
               int.width=.76, interval = TRUE,
@@ -278,13 +279,150 @@ interact_plot(cn_fd, pred = cn, modx = t_fd_o20,
         plot.title = element_text(hjust = .5),
         legend.title = element_text(hjust = .5)) +
   labs(x="Level of Christian Nationalism", 
-       y="Percent That Agree With Experiment Statement",
+       y="Support for Fighting Discrimination",
        title=NULL)+
   scale_y_continuous()
 
 ```
 
 
+```{r}
+att_fd <- glm.nb(p_fd_o20 ~ cn+t_fd_o20*attend5+sdo+q38_10rc+cphavg+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_fd, weight=wgt)
+summary(att_fd)
+
+interact_plot(att_fd, pred = attend5, modx = t_fd_o20, 
+              int.width=.76, interval = TRUE,
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Church Attendance\n(Higher number is greater attendance)", 
+       y="Support for Fighting Discrimination",
+       title=NULL)+
+  scale_y_continuous()
+
+```
+
+
+```{r}
+sdo_fd <- glm.nb(p_fd_o20 ~ cn+t_fd_o20*sdo+attend5+q38_10rc+cphavg+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_fd, weight=wgt)
+summary(sdo_fd)
+
+interact_plot(sdo_fd, pred = sdo, modx = t_fd_o20, 
+              int.width=.76, interval = TRUE,
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="SDO Level", 
+       y="Support for Fighting Discrimination",
+       title=NULL)+
+  scale_y_continuous()
+
+```
+
+```{r}
+cph_fd <- glm.nb(p_fd_o20 ~ cn+t_fd_o20*cphavg+sdo+attend5+q38_10rc+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_fd, weight=wgt)
+summary(cph_fd)
+
+interact_plot(cph_fd, pred = cphavg, modx = t_fd_o20, 
+              int.width=.76, interval = TRUE,
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="CPH Level", 
+       y="Support for Fighting Discrimination",
+       title=NULL)+
+  scale_y_continuous()
+
+```
+
+```{r}
+evil_fd <- glm.nb(p_fd_o20 ~ cn+t_fd_o20*evil+sdo+attend5+q38_10rc+cphavg+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_fd, weight=wgt)
+summary(evil_fd)
+
+interact_plot(evil_fd, pred = evil, modx = t_fd_o20, 
+              int.width=.76, interval = TRUE,
+              colors = c("#84D7E1FF", "#8A4198FF"),
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Evil Active", 
+       y="Support for Fighting Discrimination",
+       title=NULL)+
+  scale_y_continuous()
+
+```
+
+
+```{r}
+cn_az <- glm.nb(p_az_o20 ~ cn+t_az_o20+attend5+sdo+q38_10rc+cphavg+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_az, weight=wgt)
+summary(cn_az)
+
+interact_plot(cn_az, pred = cn, modx = t_az_o20, 
+              int.width=.76, interval = TRUE,
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Level of Christian Nationalism", 
+       y="Support for Fighting Discrimination",
+       title=NULL)+
+  scale_y_continuous()
+
+```
+
+```{r}
+cph_az <- glm.nb(p_az_o20 ~ cphavg*t_az_o20+attend5+sdo+q38_10rc+cn+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_az, weight=wgt)
+summary(cph_az)
+
+interact_plot(cph_az, pred = cphavg, modx = t_az_o20, 
+              int.width=.76, interval = TRUE,
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Level of CPH", 
+       y="Support for Self-Determination",
+       title=NULL)+
+  scale_y_continuous()
+
+```
 
 
 

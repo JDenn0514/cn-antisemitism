@@ -215,7 +215,7 @@ O20_az <- O20 %>% gather(key="t_az_o20", value="p_az_o20", q102, q103, q104, na.
   mutate(t_az_o20=frcode(t_az_o20=="q102" ~ "All People",
                          t_az_o20=="q103" ~ "Jews",
                          t_az_o20=="q104" ~ "Jews + Israel"),
-           p_az_o20=car::recode(p_az_o20, "1:2=1; 3:5=0"))
+           p_az_o20=car::recode(p_az_o20, "1=4; 2=3; 3=2; 4=1; 5=0"))
 #Jews vs All People
 O20_azj <- O20 %>% gather(key="t_az_o20", value="p_az_o20", q102, q103, na.rm=TRUE) %>% 
   mutate(t_az_o20=frcode(t_az_o20=="q102" ~ "All People",
@@ -239,7 +239,7 @@ O20_azji <- O20 %>% gather(key="t_az_o20", value="p_az_o20", q103, q104, na.rm=T
 O20_fd <- O20 %>% gather(key="t_fd_o20", value="p_fd_o20", q100, q101, na.rm=TRUE) %>% 
   mutate(t_fd_o20=frcode(t_fd_o20=="q100" ~ "Control",
                          t_fd_o20=="q101" ~ "Antisemitism"),
-           p_fd_o20=car::recode(p_fd_o20, "1=1; 2:3=0"))
+           p_fd_o20=car::recode(p_fd_o20, "2=0; 3=1; 1=2"))
 
 O20_fdf <- O20 %>% gather(key="t_fd_o20", value="p_fd_o20", q100, q101, na.rm=TRUE) %>% 
   mutate(t_fd_o20=frcode(t_fd_o20=="q100" ~ "Control",
