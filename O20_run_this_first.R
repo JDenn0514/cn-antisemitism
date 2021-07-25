@@ -177,6 +177,9 @@ O20 <- O20 %>% mutate(involve=q62_4)
 O20 %>% dplyr::select(q44_1, q44_2, q44_3) %>% psych::alpha(.) #a=.63
 O20 <- O20 %>% mutate(evil=((5-q44_1)+(5-q44_2)+(5-q44_3))/12)
 
+#end times
+O20 <- O20 %>% mutate(end=5-q41_7)
+
 #Left the church
 O20 <- O20 %>% mutate(left=car::recode(q45, "1=1; 2:3=0; else=NA"))
 

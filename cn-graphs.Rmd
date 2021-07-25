@@ -381,34 +381,13 @@ interact_plot(evil_fd, pred = evil, modx = t_fd_o20,
 
 
 ```{r}
-cn_az <- glm.nb(p_az_o20 ~ cn+t_az_o20+attend5+sdo+q38_10rc+cphavg+evil+white+pid7f+age+female+ed+reltrad, 
-                   data = O20_az, weight=wgt)
-summary(cn_az)
-
-interact_plot(cn_az, pred = cn, modx = t_az_o20, 
-              int.width=.76, interval = TRUE,
-              legend.main = "") +
-  theme_minimal() +
-  theme(text=element_text(family="G", size=12),
-        panel.grid.minor.y = element_blank(),
-        panel.grid.major.x = element_line(size=.5, color="gray80"),
-        legend.position = "right",
-        plot.title = element_text(hjust = .5),
-        legend.title = element_text(hjust = .5)) +
-  labs(x="Level of Christian Nationalism", 
-       y="Support for Fighting Discrimination",
-       title=NULL)+
-  scale_y_continuous()
-
-```
-
-```{r}
-cph_az <- glm.nb(p_az_o20 ~ cphavg*t_az_o20+attend5+sdo+q38_10rc+cn+evil+white+pid7f+age+female+ed+reltrad, 
+cph_az <- glm.nb(p_az_o20 ~ cn+t_az_o20*cphavg+tropes+attend5+sdo+end+q38_10rc+evil+white+pid7f+age+female+ed+reltrad, 
                    data = O20_az, weight=wgt)
 summary(cph_az)
 
 interact_plot(cph_az, pred = cphavg, modx = t_az_o20, 
               int.width=.76, interval = TRUE,
+              colors = c("#FF6F00FF", "#8A4198FF", "#84D7E1FF"),
               legend.main = "") +
   theme_minimal() +
   theme(text=element_text(family="G", size=12),
@@ -417,13 +396,58 @@ interact_plot(cph_az, pred = cphavg, modx = t_az_o20,
         legend.position = "right",
         plot.title = element_text(hjust = .5),
         legend.title = element_text(hjust = .5)) +
-  labs(x="Level of CPH", 
+  labs(x="Belief that Christians Are Being Persecuted", 
        y="Support for Self-Determination",
-       title=NULL)+
+       title="Higher Belief in Christian Persecution Increases Support Zionism")+
   scale_y_continuous()
 
 ```
 
+```{r}
+tr_az <- glm.nb(p_az_o20 ~ tropes*t_az_o20+attend5+cphavg+sdo+q38_10rc+end+cn+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_az, weight=wgt)
+summary(tr_az)
+
+interact_plot(tr_az, pred = tropes, modx = t_az_o20, 
+              int.width=.76, interval = TRUE,
+              colors = c("#FF6F00FF", "#8A4198FF", "#84D7E1FF"),
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Number of Antisemitic Tropes Agreed With", 
+       y="Support for Self-Determination\n(Higher Number means more support)",
+       title="Antisemites Are Not Inherently Anti-Zionist, In Fact It Might Be the Opposite")+
+  scale_y_continuous()
+
+```
+
+```{r}
+end_az <- glm.nb(p_az_o20 ~ end*t_az_o20+attend5+cphavg+sdo+q38_10rc+tropes+cn+evil+white+pid7f+age+female+ed+reltrad, 
+                   data = O20_az, weight=wgt)
+summary(end_az)
+
+interact_plot(end_az, pred = end, modx = t_az_o20, 
+              int.width=.76, interval = TRUE,
+              colors = c("#FF6F00FF", "#8A4198FF", "#84D7E1FF"),
+              legend.main = "") +
+  theme_minimal() +
+  theme(text=element_text(family="G", size=12),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_line(size=.5, color="gray80"),
+        legend.position = "right",
+        plot.title = element_text(hjust = .5),
+        legend.title = element_text(hjust = .5)) +
+  labs(x="Belief that the End Times Are Near", 
+       y="Support for Self-Determination\n(Higher Number means more support)",
+       title="Antisemites Are Not Inherently Anti-Zionist, In Fact It Might Be the Opposite")+
+  scale_y_continuous()
+
+```
 
 
 
