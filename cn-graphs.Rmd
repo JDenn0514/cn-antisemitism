@@ -18,12 +18,14 @@ O20 %>%
         panel.grid.major.y = element_line(size=.5, color="gray80"),
         axis.text.x = element_text(size=9),
         plot.title = element_text(hjust = .5)) +
-  geom_text(aes(label = round(mean, digits=2)), family="G", nudge_y = -.6) +
+  geom_text(aes(label = round(mean, digits=2)), family="G", nudge_y = -.6, color="white") +
   scale_y_continuous() +
-  labs(x="Level of Christian Nationalism", y="Average Number of\nTropes People Agree With", 
+  labs(x="Level of Christian Nationalism", y="Number of Antisemitic\nTropes People Agree With", 
        title=NULL,
        caption="Source: October 2020 Survey") +
   scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041"))
+
+
 
 ```
 
@@ -44,7 +46,7 @@ O20_tropes %>%
         panel.grid.major.y = element_line(size=.5, color="gray80"),
         axis.text.x = element_text(size=9),
         plot.title = element_text(hjust = .5)) +
-  geom_text(aes(label = round(pct * 100, digits = 2)), family="G", nudge_y = -.07, size=3.5, color="white") +
+  geom_text(aes(label = round(pct * 100, digits = 2)), family="G", nudge_y = -.05, size=3.5, color="white") +
   scale_y_continuous(labels=percent_format(accuracy=1)) +
   labs(x="Level of Christian Nationalism", 
        y="Percentage of Respondents Who\nAgree with Each Statement", 
@@ -57,30 +59,7 @@ O20_tropes %>%
 
 
 
-```{r}
-#Figure 3
 
-O20_tropes %>% group_by(t_tropes, q38_10lab, cntot4f) %>% 
-  ct(p_tropes, wt=wgt) %>% filter(p_tropes==1) %>% 
-  ggplot(., aes(x=cntot4f, y=pct, color=q38_10lab, group=q38_10lab)) +
-  geom_line(size=1.25) +
-  geom_point(size=4, color="white", shape=19) +
-  geom_point(size=4, shape=1) +
-  theme_hc() +
-  facet_wrap(~t_tropes, ncol=4, nrow=2) +
-  theme(legend.position="bottom",
-        text=element_text(family="G", size=12),        
-        plot.title = element_text(hjust = .5),
-        legend.title = element_text(hjust = .5)) +
-  scale_x_discrete(labels=c("Lowest", "", "", "Highest")) +
-  scale_y_continuous(labels=percent_format(accuracy=1)) +
-  labs(x="Level of Christian Nationalism", 
-       y="Percentage of Respondents Who\nAgree with Each Statement",
-       caption="Source: October 2020 Survey.",
-       title=NULL) +
-  scale_color_manual(values = c("#84D7E1FF", "#8A4198FF"), name="QAnon Belief")
-
-```
 
 ```{r}
 O20 %>% 
@@ -97,9 +76,9 @@ O20 %>%
         panel.grid.major.y = element_line(size=.5, color="gray80"),
         axis.text.x = element_text(size=9),
         plot.title = element_text(hjust = .5)) +
-  geom_text(aes(label = round(mean, digits=2)), family="G", nudge_y = 1) +
+  geom_text(aes(label = round(mean, digits=2)), y=0.33, family="G", color="white") + 
   scale_y_continuous() +
-  labs(x="Church Attendance", y="Average Number of\nTropes People Agree With", 
+  labs(x="Church Attendance", y="Number of Antisemitic\nTropes People Agree With", 
        title=NULL,
        caption="Source: October 2020 Survey") +
   scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041","#3F4041","#3F4041")) +
@@ -126,7 +105,7 @@ interact_plot(cn_hiattf, pred = cn, modx = attend5, mod2=white,
         plot.title = element_text(hjust = .5),
         legend.title = element_text(hjust = .5)) +
   labs(x="Level of Christian Nationalism", 
-       y="Percentage of Respondents Who\nAgree with Each Statement", 
+       y="Number of Antisemitic\nTropes People Agree With", 
        title=NULL,
        caption="Source: October 2020 Survey") +
   scale_y_continuous()
@@ -156,7 +135,7 @@ interact_plot(cn_cphavg, pred = cn, modx = cphavg, mod2=white,
         plot.title = element_text(hjust = .5),
         legend.title = element_text(hjust = .5)) +
   labs(x="Level of Christian Nationalism", 
-       y="Percentage of Respondents Who\nAgree with Each Statement", 
+       y="Number of Antisemitic\nTropes People Agree With", 
        title=NULL,
        caption="Source: October 2020 Survey") +
   scale_y_continuous()
@@ -183,7 +162,7 @@ interact_plot(cn_qanon, pred = cn, modx = q38_10rc, mod2=white,
         plot.title = element_text(hjust = .5),
         legend.title = element_text(hjust = .5)) +
   labs(x="Level of Christian Nationalism", 
-       y="Percentage of Respondents Who\nAgree with Each Statement", 
+       y="Number of Antisemitic\nTropes People Agree With", 
        title=NULL,
        caption="Source: October 2020 Survey") +
   scale_y_continuous()
@@ -201,7 +180,7 @@ interact_plot(cn_sdo, pred = cn, modx = sdo, mod2=white,
               modx.values = "plus-minus",
               modx.labels = c("Low", "High"),
               mod2.labels = c("Non-White", "White"),
-              colors = c("#84D7E1FF", "#8A4198FF"),
+              colors = c("#84d7e1", "#8A4198FF"),
               legend.main = "Level of Social\nDominance\nOrientation") +
   theme_minimal() +
   theme(text=element_text(family="G", size=12),
@@ -211,7 +190,7 @@ interact_plot(cn_sdo, pred = cn, modx = sdo, mod2=white,
         plot.title = element_text(hjust = .5),
         legend.title = element_text(hjust = .5)) +
   labs(x="Level of Christian Nationalism", 
-       y="Percentage of Respondents Who\nAgree with Each Statement", 
+       y="Number of Antisemitic\nTropes People Agree With", 
        title=NULL,
        caption="Source: October 2020 Survey") +
   scale_y_continuous()
