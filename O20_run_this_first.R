@@ -121,8 +121,13 @@ O20 <- O20 %>% mutate(pidst=car::recode(pid7, "1=4; 2=3;3=4;4=1;5=2;6=3;7=4"))
 #Generations
 O20 <- O20 %>%  mutate(age4=car::recode(age, "18:24=1; 25:44=2; 45:64=3; 65:100=4; 101:120=NA"))
 
+O20 <- O20 %>% mutate(age4f=frcode(age4==1 ~ '18-24',
+                                   age4==2 ~ '25-44',
+                                   age4==3 ~ '45-64',
+                                   age4==4 ~ '65-100'))
+
 O20 <- O20 %>% mutate(cohorts = frcode(birthyr>= 1901 & birthyr <= 1924 ~ 'Greatest Generation',
-                                       birthyr>= 1925 & birthyr <= 1945 ~ 'Silent Generation',
+                                       birthyr>= 1925 & birthyr <= 1945 ~ 'Silent\nGeneration',
                                        birthyr>= 1946 & birthyr <= 1964 ~ 'Boomers',
                                        birthyr>= 1965 & birthyr <= 1976 ~ 'Gen X',
                                        birthyr>= 1977 & birthyr <= 1995 ~ 'Millennials',

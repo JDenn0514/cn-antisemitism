@@ -25,6 +25,49 @@ O20 %>%
        caption="Source: October 2020 Survey") +
   scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041"))
 
+O20 %>% 
+  group_by(cohorts, ideo) %>% filter(cohorts!="NA") %>% filter(cohorts!="Silent\nGeneration") %>% 
+  mean_ci(tropes, wt=wgt, ci=.84) %>% 
+  ggplot(., aes(x=cohorts, y=mean, fill= cohorts)) + 
+  geom_col(alpha=.8, color="black", width = .75) + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.1) +
+  theme_hc() +
+  theme(text=element_text(family="G", size=12),
+        legend.position = "blank",
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(size=.5, color="gray80"),
+        axis.text.x = element_text(size=9),
+        plot.title = element_text(hjust = .5)) +
+  geom_text(aes(label = round(mean, digits=2)), family="G", nudge_y = -.6, color="white") +
+  scale_y_continuous() +
+  labs(x="Generation", y="Number of Antisemitic\nTropes People Agree With", 
+       title="Antisemitism by Ideology with Generational Breakdown",
+       caption="Source: October 2020 Survey") +
+  facet_wrap(~ideo)+
+  scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041"))
+
+
+O20 %>% 
+  group_by(cohorts, race) %>% filter(cohorts!="NA") %>% filter(cohorts!="Silent\nGeneration") %>% 
+  mean_ci(tropes, wt=wgt, ci=.84) %>% 
+  ggplot(., aes(x=cohorts, y=mean, fill= cohorts)) + 
+  geom_col(alpha=.8, color="black", width = .75) + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.1) +
+  theme_hc() +
+  theme(text=element_text(family="G", size=12),
+        legend.position = "blank",
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(size=.5, color="gray80"),
+        axis.text.x = element_text(size=9),
+        plot.title = element_text(hjust = .5)) +
+  geom_text(aes(label = round(mean, digits=2)), family="G", nudge_y = -.6, color="white") +
+  scale_y_continuous() +
+  labs(x="Generation", y="Number of Antisemitic\nTropes People Agree With", 
+       title="Antisemitism by Race with Generational Breakdown",
+       caption="Source: October 2020 Survey") +
+  facet_wrap(~race)+
+  scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041"))
+
 
 
 ```
@@ -83,6 +126,30 @@ O20 %>%
        caption="Source: October 2020 Survey") +
   scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041","#3F4041","#3F4041")) +
   facet_wrap(~reltrad, nrow=2)
+
+O20 %>% 
+  group_by(tropes_factor) %>% filter(tropes_factor!="NA") %>% 
+  mean_ci(q47_13, wt=wgt, ci=.84) %>% 
+  ggplot(., aes(x=tropes_factor, y=mean, fill= tropes_factor)) + 
+  geom_col(alpha=.8, color="black", width = .75) + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=.1) +
+  theme_hc() +
+  theme(text=element_text(family="G", size=12),
+        legend.position = "blank",
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(size=.5, color="gray80"),
+        axis.text.x = element_text(size=9),
+        plot.title = element_text(hjust = .5)) +
+  geom_text(aes(label = round(mean, digits=2)), y=2, family="G", color="white") + 
+  scale_y_continuous() +
+  labs(x="Church Attendance", y="Number of Antisemitic\nTropes People Agree With", 
+       title=NULL,
+       caption="Source: October 2020 Survey") +
+  scale_fill_manual(values=c("#3F4041","#3F4041","#3F4041","#3F4041","#3F4041","#3F4041",
+                             "#3F4041","#3F4041","#3F4041")) 
+
+O20 %>% mean_ci(tropes)
+
 
 ```
 
